@@ -1,2 +1,5 @@
-api
-node_modules
+node_modules/
+api/
+sql/
+www/res/log
+www/res/php/*.php
