@@ -1,9 +1,18 @@
 <?php
 
+/*
 $_POST = array(
 	"action"  => "Register_Device",
 	"channel" => "app",
 	"payload" => "{}"
+);
+*/
+
+$_POST = array(
+	"action"         => "Register_ACK",
+	"channel"        => "app",
+	"ticket_id"      => "foo-bar",
+	"authentication" => "beb9f2efc6d12b5bd15e2e80eeb85156d702107b"
 );
 
 require_once( 'res/php/class.gateway.php' );

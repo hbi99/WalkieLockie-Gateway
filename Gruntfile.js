@@ -6,10 +6,15 @@ module.exports = function (grunt) {
 		// metadata
 		pkg : grunt.file.readJSON('package.json'),
 
-		mocha_phantomjs: {
-			files: {
-				src: ['tests/*.htm']
-			}
+		casperjs: {
+			options: {
+				verbose: true,
+				'log-level': 'debug',
+				async: {
+					parallel: false
+				}
+			},
+			files: ['tests/test-*.js']
 		}
 
 	});
@@ -17,8 +22,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-jasmine');
-	grunt.loadNpmTasks('grunt-mocha-phantomjs');
+	grunt.loadNpmTasks('grunt-casperjs');
 
 	grunt.registerTask('default', [
 		'jshint',
@@ -27,7 +31,7 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('lib', [ 'concat:nodelib' ]);
 
-	grunt.registerTask('test', [ 'mocha_phantomjs' ]);
+	grunt.registerTask('test', [ 'casperjs' ]);
 
 };
 
