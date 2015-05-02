@@ -13,8 +13,6 @@ var sha1    = require('../www/res/js/sha1.js'),
 	gateway = 'http://gateway.walkielockie/index.php',
 	ticket;
 
-// capture test suite
-
 // go to domain
 casper.start(domain, function() {
 	this.echo('Testing from domain: '+ domain);
@@ -70,7 +68,7 @@ casper.thenOpen(domain, function() {
 		}
 	});
 
-	// ERROR Testing: bad ticket_id
+	// ERROR Testing: bad ticket_id (second test)
 	this.thenOpen(gateway, {
 		method: 'POST',
 		data: {
