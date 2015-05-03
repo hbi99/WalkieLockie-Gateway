@@ -22,12 +22,18 @@
     "url": "https://github.com/hbi99/WalkieLockie-Gateway/issues"
   },
   "homepage": "http://",
+  "scripts": {
+    "test": "grunt test"
+  },
   "dependencies": {},
   "devDependencies": {
+    "chai": "^1.9.1",
     "grunt": "~0.4.2",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-jshint": "~0.8.0",
     "grunt-contrib-uglify": "~0.3.2",
-    "grunt-casperjs": "2.1.0"
+    "grunt-mocha-test": "^0.12.0",
+    "mocha": "^1.21.4",
+    "supertest": "^0.13.0"
   }
 }

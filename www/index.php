@@ -2,6 +2,4 @@
 
 require_once( 'res/php/class.gateway.php' );
 
-$GW->init();
-
 ?>
