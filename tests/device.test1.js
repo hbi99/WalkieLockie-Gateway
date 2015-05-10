@@ -195,7 +195,7 @@ describe('Device', function() {
 					done();
 					//console.log( res.text );
 					// check response
-					console.log( '\tDevice removed: \t'+ payload.device );
+					console.log( '\tDevice removed: \t'+ payload.device +'\n\n' );
 				});
 
 		});

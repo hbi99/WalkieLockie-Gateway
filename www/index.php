@@ -1,5 +1,5 @@
 <?php
 
-require_once( 'res/php/class.gateway.php' );
+require_once( 'res/php/class.gw.php' );
 
 ?>
