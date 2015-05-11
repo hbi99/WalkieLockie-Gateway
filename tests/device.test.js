@@ -24,12 +24,9 @@ describe('Device', function() {
 
 			request(gateway)
 				.post('/device/register')
-				.set('Content-Length', str.length)
-				.set('Accept', 'application/json')
 				.send(str)
 				.expect(200, function(err, res) {
 					done();
-					//console.log( res.text );
 					// prepare for next step
 					payload = JSON.parse(res.text);
 					console.log( '\tTicket ID: \t'+ payload.ticket );
@@ -54,14 +51,12 @@ describe('Device', function() {
 
 			request(gateway)
 				.post('/device/register-ack')
-				.set('Content-Length', str.length)
-				.set('Accept', 'application/json')
 				.send(str)
 				.expect(200, function(err, res) {
 					done();
 					// check response
 					var resp = JSON.parse(res.text);
-					if (resp.error === '510') {
+					if (resp.error === 510) {
 						console.log( '\t-> Correct error code on bad "authentication": '+ resp.error );
 					}
 				});
@@ -81,14 +76,12 @@ describe('Device', function() {
 
 			request(gateway)
 				.post('/device/register-ack')
-				.set('Content-Length', str.length)
-				.set('Accept', 'application/json')
 				.send(str)
 				.expect(200, function(err, res) {
 					done();
 					// check response
 					var resp = JSON.parse(res.text);
-					if (resp.error === '511') {
+					if (resp.error === 511) {
 						console.log( '\t-> Correct error code on bad "ticket_id" (1): '+ resp.error );
 					}
 				});
@@ -109,14 +102,12 @@ describe('Device', function() {
 
 			request(gateway)
 				.post('/device/register-ack')
-				.set('Content-Length', str.length)
-				.set('Accept', 'application/json')
 				.send(str)
 				.expect(200, function(err, res) {
 					done();
 					// check response
 					var resp = JSON.parse(res.text);
-					if (resp.error === '513') {
+					if (resp.error === 513) {
 						console.log( '\t-> Correct error code on bad "ticket_id" (2): '+ resp.error );
 					}
 				});
@@ -137,8 +128,6 @@ describe('Device', function() {
 
 			request(gateway)
 				.post('/device/register-ack')
-				.set('Content-Length', str.length)
-				.set('Accept', 'application/json')
 				.send(str)
 				.expect(200, function(err, res) {
 					done();
@@ -164,8 +153,6 @@ describe('Device', function() {
 
 			request(gateway)
 				.post('/device/unregister')
-				.set('Content-Length', str.length)
-				.set('Accept', 'application/json')
 				.send(str)
 				.expect(200, function(err, res) {
 					done();
@@ -188,8 +175,6 @@ describe('Device', function() {
 
 			request(gateway)
 				.post('/device/remove')
-				.set('Content-Length', str.length)
-				.set('Accept', 'application/json')
 				.send(str)
 				.expect(200, function(err, res) {
 					done();

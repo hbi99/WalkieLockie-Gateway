@@ -14,14 +14,14 @@ var gateway = 'http://gateway.walkielockie',
 
 describe('Domain', function() {
 
-	/* Testing missing parameters
+	/* Testing error code 516: (unresolvable domain)
+	 */
 	describe('register, unresolvable domain', function() {
 		it('responds with JSON', function(done) {
 			
 			request(gateway)
 				.post('/domain/register')
 				.send(JSON.stringify({
-					action   : 'register',
 					name     : 'DefiantJS',
 					domain   : 'www.defiantjs1.com',
 					callback : '/path_to_file.php'
@@ -30,22 +30,21 @@ describe('Domain', function() {
 					done();
 					// check response
 					var resp = JSON.parse(res.text);
-					if (resp.error === '516') {
+					if (resp.error === 516) {
 						console.log( '\t-> Correct error code on unresolvable domain: '+ resp.error );
 					}
 				});
 		});
 	});
-	 */
 
-	/* Testing missing parameters
+	/* Testing error code 509: (missing parameter 'callback')
+	 */
 	describe('register, missing parameters', function() {
 		it('responds with JSON', function(done) {
 			
 			request(gateway)
 				.post('/domain/register')
 				.send(JSON.stringify({
-					action   : 'register',
 					domain   : 'www.defiantjs.com',
 					callback : ''
 				}))
@@ -53,13 +52,12 @@ describe('Domain', function() {
 					done();
 					// check response
 					var resp = JSON.parse(res.text);
-					if (resp.error === '509') {
+					if (resp.error === 509) {
 						console.log( '\t-> Correct error code on missing parameter (callback): '+ resp.error );
 					}
 				});
 		});
 	});
-	 */
 
 	/* Register domain
 	 */
@@ -69,7 +67,6 @@ describe('Domain', function() {
 			request(gateway)
 				.post('/domain/register')
 				.send(JSON.stringify({
-					action   : 'register',
 					name     : 'DefiantJS',
 					domain   : 'www.defiantjs.com',
 					favicon  : '/path_to_icon.php',
@@ -78,9 +75,35 @@ describe('Domain', function() {
 				.expect(200, function(err, res) {
 					done();
 
-					GLOBAL.payload = JSON.parse(res.text);
+					payload = JSON.parse(res.text);
+					// for debug purposes
+					console.log( JSON.stringify(payload, false, '\t') );
 				});
 
+		});
+	});
+
+	/* Testing error code 517: (Domain already registered)
+	 */
+	describe('register, missing parameters', function() {
+		it('responds with JSON', function(done) {
+			
+			request(gateway)
+				.post('/domain/register')
+				.send(JSON.stringify({
+					name     : 'DefiantJS',
+					domain   : 'www.defiantjs.com',
+					favicon  : '/path_to_icon.php',
+					callback : '/path_to_file.php'
+				}))
+				.expect(200, function(err, res) {
+					done();
+					// check response
+					var resp = JSON.parse(res.text);
+					if (resp.error === 517) {
+						console.log( '\t-> Correct error code on domain already registered: '+ resp.error );
+					}
+				});
 		});
 	});
 
@@ -92,18 +115,43 @@ describe('Domain', function() {
 			request(gateway)
 				.post('/domain/unregister')
 				.send(JSON.stringify({
-					action         : 'unregister',
-					name           : 'DefiantJS',
 					domain         : 'www.defiantjs.com',
-					account        : GLOBAL.payload.account,
-					authentication : (GLOBAL.payload.account + GLOBAL.payload.secret).sha1()
+					callback       : '/path_to_file.php',
+					id             : payload.ID,
+					authentication : (payload.ID + payload.secret).sha1()
 				}))
 				.expect(200, function(err, res) {
 					done();
 
-					console.log( res.text );
+					// check response
+					var resp = JSON.parse(res.text);
+					console.log( '\t-> Domain unregistered: '+ resp.domain );
 				});
 
+		});
+	});
+
+	/* Testing error code 518: (Unrecognized domain)
+	 */
+	describe('unregister, with foo-domain', function() {
+		it('responds with JSON', function(done) {
+			
+			request(gateway)
+				.post('/domain/unregister')
+				.send(JSON.stringify({
+					domain         : 'www.defiantjs1.com',
+					callback       : '/path_to_file.php',
+					id             : payload.ID,
+					authentication : (payload.ID + payload.secret).sha1()
+				}))
+				.expect(200, function(err, res) {
+					done();
+					// check response
+					var resp = JSON.parse(res.text);
+					if (resp.error === 518) {
+						console.log( '\t-> Correct error code on missing parameter (callback): '+ resp.error );
+					}
+				});
 		});
 	});
 
