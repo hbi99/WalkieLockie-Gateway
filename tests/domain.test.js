@@ -24,7 +24,8 @@ describe('Domain', function() {
 				.send(JSON.stringify({
 					name     : 'DefiantJS',
 					domain   : 'www.defiantjs1.com',
-					callback : '/path_to_file.php'
+					favicon  : '/path_to_icon.png',
+					callback : '/wl_test.php'
 				}))
 				.expect(200, function(err, res) {
 					done();
@@ -32,6 +33,30 @@ describe('Domain', function() {
 					var resp = JSON.parse(res.text);
 					if (resp.error === 516) {
 						console.log( '\t-> Correct error code on unresolvable domain: '+ resp.error );
+					}
+				});
+		});
+	});
+
+	/* Testing error code 522: (callback missing file)
+	 */
+	describe('register, missing callback file', function() {
+		it('responds with JSON', function(done) {
+			
+			request(gateway)
+				.post('/domain/register')
+				.send(JSON.stringify({
+					name     : 'DefiantJS',
+					domain   : 'www.defiantjs.com',
+					favicon  : '/path_to_icon.png',
+					callback : '/wl_test1.php'
+				}))
+				.expect(200, function(err, res) {
+					done();
+					// check response
+					var resp = JSON.parse(res.text);
+					if (resp.error === 521) {
+						console.log( '\t-> Correct error code on missing callback file: '+ resp.error );
 					}
 				});
 		});
@@ -69,8 +94,8 @@ describe('Domain', function() {
 				.send(JSON.stringify({
 					name     : 'DefiantJS',
 					domain   : 'www.defiantjs.com',
-					favicon  : '/path_to_icon.php',
-					callback : '/path_to_file.php'
+					favicon  : '/path_to_icon.png',
+					callback : '/wl_test.php'
 				}))
 				.expect(200, function(err, res) {
 					done();
@@ -93,8 +118,8 @@ describe('Domain', function() {
 				.send(JSON.stringify({
 					name     : 'DefiantJS',
 					domain   : 'www.defiantjs.com',
-					favicon  : '/path_to_icon.php',
-					callback : '/path_to_file.php'
+					favicon  : '/path_to_icon.png',
+					callback : '/wl_test.php'
 				}))
 				.expect(200, function(err, res) {
 					done();
@@ -115,43 +140,20 @@ describe('Domain', function() {
 			request(gateway)
 				.post('/domain/unregister')
 				.send(JSON.stringify({
+					name           : 'DefiantJS',
 					domain         : 'www.defiantjs.com',
-					callback       : '/path_to_file.php',
+					favicon        : '/path_to_icon.png',
+					callback       : '/wl_test.php',
 					id             : payload.ID,
 					authentication : (payload.ID + payload.secret).sha1()
 				}))
 				.expect(200, function(err, res) {
 					done();
-
 					// check response
 					var resp = JSON.parse(res.text);
 					console.log( '\t-> Domain unregistered: '+ resp.domain );
 				});
 
-		});
-	});
-
-	/* Testing error code 518: (Unrecognized domain)
-	 */
-	describe('unregister, with foo-domain', function() {
-		it('responds with JSON', function(done) {
-			
-			request(gateway)
-				.post('/domain/unregister')
-				.send(JSON.stringify({
-					domain         : 'www.defiantjs1.com',
-					callback       : '/path_to_file.php',
-					id             : payload.ID,
-					authentication : (payload.ID + payload.secret).sha1()
-				}))
-				.expect(200, function(err, res) {
-					done();
-					// check response
-					var resp = JSON.parse(res.text);
-					if (resp.error === 518) {
-						console.log( '\t-> Correct error code on missing parameter (callback): '+ resp.error );
-					}
-				});
 		});
 	});
 
