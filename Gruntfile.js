@@ -10,7 +10,11 @@ module.exports = function (grunt) {
 				options: {
 					reporter: 'list'
 				},
-				src: ['tests/*.test.js']
+				src: [
+					//'tests/device-register.test.js'
+					//'tests/domain-register.test.js'
+					'tests/domain-qr.test.js'
+				]
 			}
 		}
 	});

@@ -1,17 +1,9 @@
 <?php
 
-require_once __DIR__ ."/res/php/class.error.php";
-require_once __DIR__ ."/res/php/class.package.php";
+require_once __DIR__ ."/res/php/class.db.php";
 
-$PKG->payload = (object) array(
-	"domain" => "www.defiantjs.com",
-	"callback" => "/wl_test.php"
-);
+$resp = $DB->get_row( "SELECT * FROM wl_ticket WHERE ID='3555c1550c4304';" );
 
-$resp = $PKG->check_callback_file( array(
-			"pipe"   => "gateway",
-			"action" => "validate"
-		) );
 
 print_r( $resp );
 

@@ -19,21 +19,16 @@ describe('Device', function() {
 	describe('registering', function() {
 		it('returns with JSON', function(done) {
 
-			var data = {},
-				str = JSON.stringify(data);
-
 			request(gateway)
 				.post('/device/register')
-				.send(str)
+				.send(JSON.stringify({}))
 				.expect(200, function(err, res) {
 					done();
 					// prepare for next step
 					payload = JSON.parse(res.text);
 					console.log( '\tTicket ID: \t'+ payload.ticket );
-					console.log( '\tDevice ID: \t'+ payload.device );
+					console.log( '\tDevice ID: \t'+ payload.ID );
 					console.log( '\tSecret: \t'+ payload.secret );
-
-					GLOBAL.payload = payload;
 				});
 		});
 	});
@@ -43,15 +38,12 @@ describe('Device', function() {
 	describe('testing bad authentication', function() {
 		it('responds with JSON', function(done) {
 			
-			var data = {
-					ticket: payload.ticket,
-					authentication: 'foo-bar'
-				},
-				str = JSON.stringify(data);
-
 			request(gateway)
 				.post('/device/register-ack')
-				.send(str)
+				.send(JSON.stringify({
+					ticket         : payload.ticket,
+					authentication : 'foo-bar'
+				}))
 				.expect(200, function(err, res) {
 					done();
 					// check response
@@ -68,15 +60,12 @@ describe('Device', function() {
 	describe('testing bad authentication', function() {
 		it('responds with JSON', function(done) {
 			
-			var data = {
-					ticket: 'foo-bar',
-					authentication: (payload.device + payload.secret).sha1()
-				},
-				str = JSON.stringify(data);
-
 			request(gateway)
 				.post('/device/register-ack')
-				.send(str)
+				.send(JSON.stringify({
+					ticket         : 'foo-bar',
+					authentication : (payload.ID + payload.secret).sha1()
+				}))
 				.expect(200, function(err, res) {
 					done();
 					// check response
@@ -94,15 +83,12 @@ describe('Device', function() {
 	describe('testing bad authentication', function() {
 		it('responds with JSON', function(done) {
 			
-			var data = {
-					ticket: 'WL:1foo-bar',
-					authentication: (payload.device + payload.secret).sha1()
-				},
-				str = JSON.stringify(data);
-
 			request(gateway)
 				.post('/device/register-ack')
-				.send(str)
+				.send(JSON.stringify({
+					ticket         : 'WL:1foo-bar',
+					authentication : (payload.ID + payload.secret).sha1()
+				}))
 				.expect(200, function(err, res) {
 					done();
 					// check response
@@ -120,21 +106,18 @@ describe('Device', function() {
 	describe('registration ACK', function() {
 		it('responds with JSON', function(done) {
 			
-			var data = {
-					ticket: payload.ticket,
-					authentication: (payload.device + payload.secret).sha1()
-				},
-				str = JSON.stringify(data);
-
 			request(gateway)
 				.post('/device/register-ack')
-				.send(str)
+				.send(JSON.stringify({
+					ticket         : payload.ticket,
+					authentication : (payload.ID + payload.secret).sha1()
+				}))
 				.expect(200, function(err, res) {
 					done();
 					//console.log( res.text );
 					// check response
 					var resp = JSON.parse(res.text);
-					console.log( '\tDevice registered: \t'+ payload.device );
+					console.log( '\tDevice registered: \t'+ payload.ID );
 				});
 
 		});
@@ -145,15 +128,12 @@ describe('Device', function() {
 	describe('unregistration', function() {
 		it('responds with JSON', function(done) {
 			
-			var data = {
-					device: payload.device,
-					authentication: (payload.device + payload.secret).sha1()
-				},
-				str = JSON.stringify(data);
-
 			request(gateway)
 				.post('/device/unregister')
-				.send(str)
+				.send(JSON.stringify({
+					device         : payload.ID,
+					authentication : (payload.ID + payload.secret).sha1()
+				}))
 				.expect(200, function(err, res) {
 					done();
 					//console.log( res.text );
@@ -167,20 +147,16 @@ describe('Device', function() {
 	describe('is being removed,', function() {
 		it('responds with JSON', function(done) {
 			
-			var data = {
-					device: payload.device,
-					authentication: (payload.device + payload.secret).sha1()
-				},
-				str = JSON.stringify(data);
-
 			request(gateway)
 				.post('/device/remove')
-				.send(str)
+				.send(JSON.stringify({
+					device         : payload.ID,
+					authentication : (payload.ID + payload.secret).sha1()
+				}))
 				.expect(200, function(err, res) {
 					done();
-					//console.log( res.text );
 					// check response
-					console.log( '\tDevice removed: \t'+ payload.device +'\n\n' );
+					console.log( '\tDevice removed: \t'+ payload.ID +'\n\n' );
 				});
 
 		});
