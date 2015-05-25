@@ -22,13 +22,16 @@ describe('Transaction', function() {
 	describe('registering DOMAIN', function() {
 		it('returns with JSON', function(done) {
 
+			var temp = Date.now();
+
 			request(gateway)
 				.post('/domain/register')
 				.send(JSON.stringify({
 					name     : 'DefiantJS',
 					domain   : 'www.defiantjs.com',
 					favicon  : '/path_to_icon.png',
-					callback : '/wl_test.php'
+					callback : '/wl_test.php',
+					ticket   : temp
 				}))
 				.expect(200, function(err, res) {
 					done();
