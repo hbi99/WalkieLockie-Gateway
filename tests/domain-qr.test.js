@@ -35,13 +35,14 @@ describe('Transaction', function() {
 				}))
 				.expect(200, function(err, res) {
 					done();
+					console.log( res.text );
 					// prepare for next step
 					DOMAIN = JSON.parse(res.text);
 				});
 
 		});
 	});
-
+return;
 	/* Register DEVICE
 	 */
 	describe('registering DEVICE', function() {
@@ -93,7 +94,7 @@ describe('Transaction', function() {
 				.send(JSON.stringify({
 					callback       : '/wl_test.php',
 					function       : 'fn_test',
-					id             : DOMAIN.ID,
+					ID             : DOMAIN.ID,
 					authentication : (DOMAIN.ID + DOMAIN.secret).sha1()
 				}))
 				.expect(200, function(err, res) {
@@ -165,7 +166,7 @@ describe('Transaction', function() {
 					domain         : DOMAIN.domain,
 					favicon        : DOMAIN.favicon,
 					callback       : '/wl_test.php',
-					id             : DOMAIN.ID,
+					ID             : DOMAIN.ID,
 					authentication : (DOMAIN.ID + DOMAIN.secret).sha1()
 				}))
 				.expect(200, function(err, res) {

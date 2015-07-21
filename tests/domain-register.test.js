@@ -105,7 +105,37 @@ describe('Domain', function() {
 
 					payload = JSON.parse(res.text);
 					// for debug purposes
+					//console.log( JSON.stringify(payload, false, '\t') );
+				});
+
+		});
+	});
+
+	/* Re-new secret
+	 */
+	describe('renewing secret', function() {
+		it('returns with JSON', function(done) {
+
+			var ticket = Date.now();
+
+			request(gateway)
+				.post('/domain/renew-secret')
+				.send(JSON.stringify({
+					ticket         : ticket,
+					ID             : payload.ID,
+					callback       : '/wl_test.php',
+					authentication : (ticket + payload.secret).sha1()
+				}))
+				.expect(200, function(err, res) {
+				//	done();
+
+					payload = JSON.parse(res.text);
 					console.log( JSON.stringify(payload, false, '\t') );
+					process.exit(1);
+
+				//	payload = JSON.parse(res.text);
+				//	// for debug purposes
+				//	console.log( JSON.stringify(payload, false, '\t') );
 				});
 
 		});
@@ -147,7 +177,7 @@ describe('Domain', function() {
 					domain         : 'www.defiantjs.com',
 					favicon        : '/path_to_icon.png',
 					callback       : '/wl_test.php',
-					id             : payload.ID,
+					ID             : payload.ID,
 					authentication : (payload.ID + payload.secret).sha1()
 				}))
 				.expect(200, function(err, res) {

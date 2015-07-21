@@ -123,6 +123,36 @@ describe('Device', function() {
 		});
 	});
 
+	/* Re-new secret
+	 */
+	describe('renew secret', function() {
+		it('responds with JSON', function(done) {
+			
+			var ticket = 'WL:'+ Date.now();
+
+			request(gateway)
+				.post('/device/renew-secret')
+				.send(JSON.stringify({
+					device         : payload.ID,
+					ticket         : ticket,
+					authentication : (ticket + payload.secret).sha1()
+				}))
+				.expect(200, function(err, res) {
+					var resp = JSON.parse(res.text),
+						check = (ticket + payload.secret + resp.secret).sha1();
+					if (resp.authentication !== check) {
+						console.log( 'Response can not be authenticated'.red );
+					} else {
+						// update secret
+						payload.secret = resp.secret;
+						done();
+						console.log( '\tDevice secret re-newed: '+ resp.secret );
+					}
+				});
+
+		});
+	});
+
 	/* Unregister device
 	 */
 	describe('unregistration', function() {
@@ -135,8 +165,14 @@ describe('Device', function() {
 					authentication : (payload.ID + payload.secret).sha1()
 				}))
 				.expect(200, function(err, res) {
-					done();
-					//console.log( res.text );
+					var resp = JSON.parse(res.text);
+					if (resp.error) {
+						console.log( (resp.description +' ('+ resp.error +')').red );
+						process.exit(1);
+					} else {
+						done();
+						console.log( '\tDevice unregistered' );
+					}
 				});
 
 		});

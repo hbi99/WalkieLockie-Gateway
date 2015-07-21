@@ -12,8 +12,8 @@ module.exports = function (grunt) {
 				},
 				src: [
 					//'tests/device-register.test.js'
-					//'tests/domain-register.test.js'
-					'tests/domain-qr.test.js'
+					'tests/domain-register.test.js'
+					//'tests/domain-qr.test.js'
 				]
 			}
 		}
