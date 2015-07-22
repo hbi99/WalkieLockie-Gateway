@@ -127,15 +127,16 @@ describe('Domain', function() {
 					authentication : (ticket + payload.secret).sha1()
 				}))
 				.expect(200, function(err, res) {
-				//	done();
-
-					payload = JSON.parse(res.text);
-					console.log( JSON.stringify(payload, false, '\t') );
-					process.exit(1);
-
-				//	payload = JSON.parse(res.text);
-				//	// for debug purposes
-				//	console.log( JSON.stringify(payload, false, '\t') );
+					var resp = JSON.parse(res.text),
+						check = (ticket + payload.secret + resp.secret).sha1();
+					if (resp.authentication !== check) {
+						console.log( 'Response can not be authenticated'.red );
+					} else {
+						// update secret
+						payload.secret = resp.secret;
+						done();
+						console.log( '\tDomain secret re-newed: '+ resp.secret );
+					}
 				});
 
 		});
@@ -170,21 +171,22 @@ describe('Domain', function() {
 	describe('unregistering', function() {
 		it('returns with JSON', function(done) {
 
+			var ticket = Date.now();
+
 			request(gateway)
 				.post('/domain/unregister')
 				.send(JSON.stringify({
-					name           : 'DefiantJS',
-					domain         : 'www.defiantjs.com',
-					favicon        : '/path_to_icon.png',
-					callback       : '/wl_test.php',
+					ticket         : ticket,
 					ID             : payload.ID,
+					callback       : '/wl_test.php',
 					authentication : (payload.ID + payload.secret).sha1()
 				}))
 				.expect(200, function(err, res) {
+					console.log(res.text);
 					done();
 					// check response
-					var resp = JSON.parse(res.text);
-					console.log( '\t-> Domain unregistered: '+ resp.domain );
+				//	var resp = JSON.parse(res.text);
+				//	console.log( '\t-> Domain unregistered: '+ resp.domain );
 				});
 
 		});

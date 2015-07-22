@@ -10,6 +10,7 @@ var gateway = 'http://gateway.walkielockie',
 	sha1    = require('../www/res/js/sha1.js'),
 	assert  = require('assert'),
 	request = require('supertest'),
+	debug   = true,
 	TICKET,
 	payload,
 	DOMAIN,
@@ -35,14 +36,16 @@ describe('Transaction', function() {
 				}))
 				.expect(200, function(err, res) {
 					done();
-					console.log( res.text );
 					// prepare for next step
 					DOMAIN = JSON.parse(res.text);
+					if (debug) {
+						console.log( JSON.stringify(DOMAIN, false, '\t') );
+					}
 				});
 
 		});
 	});
-return;
+
 	/* Register DEVICE
 	 */
 	describe('registering DEVICE', function() {
@@ -55,6 +58,9 @@ return;
 					done();
 					// prepare for next step
 					DEVICE = JSON.parse(res.text);
+					if (debug) {
+						console.log( JSON.stringify(DEVICE, false, '\t') );
+					}
 				});
 
 		});
@@ -90,7 +96,7 @@ return;
 		it('returns with JSON', function(done) {
 
 			request(gateway)
-				.post('/domain/qr')
+				.post('/domain/qr-code')
 				.send(JSON.stringify({
 					callback       : '/wl_test.php',
 					function       : 'fn_test',
@@ -154,27 +160,28 @@ return;
 		});
 	});
 
-	/* Unregister DOMAIN
+	/* Unregister domain
 	 */
-	describe('unregistering DOMAIN', function() {
+	describe('unregistering', function() {
 		it('returns with JSON', function(done) {
+
+			var ticket = Date.now();
 
 			request(gateway)
 				.post('/domain/unregister')
 				.send(JSON.stringify({
-					name           : DOMAIN.name,
-					domain         : DOMAIN.domain,
-					favicon        : DOMAIN.favicon,
-					callback       : '/wl_test.php',
+					ticket         : ticket,
 					ID             : DOMAIN.ID,
+					callback       : '/wl_test.php',
 					authentication : (DOMAIN.ID + DOMAIN.secret).sha1()
 				}))
 				.expect(200, function(err, res) {
 					done();
-					//console.log(res.text);
-					// check response
+				
 					var resp = JSON.parse(res.text);
-					console.log( '\t-> Domain unregistered: '+ resp.domain );
+					if (debug) {
+						console.log( JSON.stringify(resp, false, '\t') );
+					}
 				});
 
 		});

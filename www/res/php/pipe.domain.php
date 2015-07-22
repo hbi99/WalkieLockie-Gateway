@@ -74,7 +74,7 @@ class PipeDomain {
 										$secret,
 										$PKG->payload->ID ) );
 				// create authentication
-				$authentication = sha1( $PKG->payload->ticket . $secret . $PKG->payload->server->secret );
+				$authentication = sha1( $PKG->payload->ticket . $PKG->payload->server->secret . $secret );
 				// preparing response
 				$PKG->response( array(
 					"ID"             => $PKG->payload->ID,
@@ -82,7 +82,7 @@ class PipeDomain {
 					"authentication" => $authentication,
 				) );
 				break;
-			case "DOMAIN:qr":
+			case "DOMAIN:qr-code":
 				// variables required
 				$qr_code = $GW->uniqid();
 				$detail  = $GW->id_details( $qr_code );
@@ -119,7 +119,7 @@ class PipeDomain {
 				) );
 				// preparing response
 				$PKG->response( array(
-					"domain" => $PKG->payload->domain
+					"domain" => $PKG->payload->server->domain
 				) );
 				break;
 		}

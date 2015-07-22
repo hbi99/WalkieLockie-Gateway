@@ -184,10 +184,10 @@ class Package {
 			 */
 			case "DOMAIN:register":
 				// common domain payload checks
-				if ( empty( $this->payload->domain ) )   $ERR->code( 509, "domain" );
-				if ( empty( $this->payload->name ) )     $ERR->code( 509, "name" );
-				if ( empty( $this->payload->favicon ) )  $ERR->code( 509, "favicon" );
-				if ( empty( $this->payload->ticket ) )   $ERR->code( 509, "ticket" );
+				if ( empty( $this->payload->domain ) )  $ERR->code( 509, "domain" );
+				if ( empty( $this->payload->name ) )    $ERR->code( 509, "name" );
+				if ( empty( $this->payload->favicon ) ) $ERR->code( 509, "favicon" );
+				if ( empty( $this->payload->ticket ) )  $ERR->code( 509, "ticket" );
 				// save record data
 				$this->domain_record = $this->get_IP_by_domain( $this->payload->domain );
 				if ( empty( $this->domain_record->ip ) ) {
@@ -201,59 +201,9 @@ class Package {
 				return $_POST;
 			case "DOMAIN:renew-secret":
 				// common domain payload checks
-				if ( empty( $this->payload->ID ) )       $ERR->code( 509, "ID" );
-				if ( empty( $this->payload->callback ) ) $ERR->code( 509, "callback" );
-				if ( empty( $this->payload->ticket ) )   $ERR->code( 509, "ticket" );
-				// check domain in database
-				$row = $DB->get_row( sprintf( "SELECT * FROM wl_domain WHERE ID='%s';", $this->payload->ID ) );
-				if ( empty( $row ) ) {
-					$ERR->code( 518 );
-				}
-				// check authentication code
-				if ( $this->payload->authentication != sha1( $this->payload->ticket . $row->secret ) ) {
-					$ERR->code( 510 );
-				}
-				// remeber domain details
-				$this->payload->server = (object) $row;
-				return $_POST;
-			case "DOMAIN:unregister":
-				// check for missing parameters
-				if ( empty( $this->payload->domain ) )   $ERR->code( 509, "domain" );
-				if ( empty( $this->payload->name ) )     $ERR->code( 509, "name" );
-				if ( empty( $this->payload->favicon ) )  $ERR->code( 509, "favicon" );
-				if ( empty( $this->payload->callback ) ) $ERR->code( 509, "callback" );
-				// save record data
-				$this->domain_record = $this->get_IP_by_domain( $this->payload->domain );
-				if ( empty( $this->domain_record->ip ) ) {
-					$ERR->code( 516 );
-				}
-				// check callback file
-				$check = $this->curl_call( (object) array(
-					"domain"   => $this->payload->domain,
-					"callback" => $this->payload->callback,
-					"payload"  => array(
-						"action" => "unregister"
-					)
-				) );
-				if ( $check->code != 200 ) {
-					$ERR->code( 522 );
-				}
-				// check domain in database
-				$row = $DB->get_row( sprintf( "SELECT * FROM wl_domain WHERE ID='%s';", $this->payload->id ) );
-				if ( empty( $row ) ) {
-					$ERR->code( 518 );
-				}
-				// remeber domain details
-				$this->payload->server = (object) $row;
-
-				// check authentication code
-				if ( $this->payload->authentication != sha1( $row->ID . $row->secret ) ) {
-					$ERR->code( 510 );
-				}
-				return $_POST;
-			case "DOMAIN:qr":
-				if ( empty( $this->payload->callback ) )       $ERR->code( 509, "callback" );
 				if ( empty( $this->payload->ID ) )             $ERR->code( 509, "ID" );
+				if ( empty( $this->payload->callback ) )       $ERR->code( 509, "callback" );
+				if ( empty( $this->payload->ticket ) )         $ERR->code( 509, "ticket" );
 				if ( empty( $this->payload->authentication ) ) $ERR->code( 509, "authentication" );
 				// check domain in database
 				$row = $DB->get_row( sprintf( "SELECT * FROM wl_domain WHERE ID='%s';", $this->payload->ID ) );
@@ -262,6 +212,57 @@ class Package {
 				}
 				// remeber domain details
 				$this->payload->server = (object) $row;
+				// check authentication code
+				if ( $this->payload->authentication != sha1( $this->payload->ticket . $row->secret ) ) {
+					$ERR->code( 510 );
+				}
+				return $_POST;
+			case "DOMAIN:qr-code":
+				if ( empty( $this->payload->ID ) )             $ERR->code( 509, "ID" );
+				if ( empty( $this->payload->callback ) )       $ERR->code( 509, "callback" );
+				if ( empty( $this->payload->authentication ) ) $ERR->code( 509, "authentication" );
+				// check domain in database
+				$row = $DB->get_row( sprintf( "SELECT * FROM wl_domain WHERE ID='%s';", $this->payload->ID ) );
+				if ( empty( $row ) ) {
+					$ERR->code( 518 );
+				}
+				// remeber domain details
+				$this->payload->server = (object) $row;
+				// check authentication code
+				if ( $this->payload->authentication != sha1( $row->ID . $row->secret ) ) {
+					$ERR->code( 510 );
+				}
+				return $_POST;
+			case "DOMAIN:unregister":
+				// check for missing parameters
+				if ( empty( $this->payload->ticket ) )         $ERR->code( 509, "ticket" );
+				if ( empty( $this->payload->ID ) )             $ERR->code( 509, "ID" );
+				if ( empty( $this->payload->callback ) )       $ERR->code( 509, "callback" );
+				if ( empty( $this->payload->authentication ) ) $ERR->code( 509, "authentication" );
+				// get server
+				$row = $DB->get_row( sprintf( "SELECT * FROM wl_domain WHERE ID='%s';", $this->payload->ID ) );
+				if ( empty( $row ) ) {
+					$ERR->code( 518 );
+				}
+				// remeber domain details
+				$this->payload->server = (object) $row;
+
+				// save record data
+				$this->domain_record = $this->get_IP_by_domain( $row->domain );
+				if ( empty( $this->domain_record->ip ) ) {
+					$ERR->code( 516 );
+				}
+				// check callback file
+				$check = $this->curl_call( (object) array(
+					"domain"   => $row->domain,
+					"callback" => $this->payload->callback,
+					"payload"  => array(
+						"action" => "unregister"
+					)
+				) );
+				if ( $check->code != 200 ) {
+					$ERR->code( 522 );
+				}
 				// check authentication code
 				if ( $this->payload->authentication != sha1( $row->ID . $row->secret ) ) {
 					$ERR->code( 510 );
